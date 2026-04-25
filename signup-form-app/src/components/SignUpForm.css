@@ -1,0 +1,224 @@
+/* SignUpForm component styles.
+   Sectioned by: form layout, field states, status banner, people table. */
+
+.signup-wrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+
+@media (min-width: 900px) {
+  .signup-wrapper {
+    grid-template-columns: minmax(320px, 420px) 1fr;
+  }
+}
+
+/* ---------- Form ---------- */
+.signup-form {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-row label {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.form-row input,
+.form-row select {
+  padding: 10px 12px;
+  font-size: 15px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.form-row input:focus,
+.form-row select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.2);
+}
+
+.form-row input.invalid,
+.form-row select.invalid {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.15);
+}
+
+/* Real-time validation error message in red, per spec. */
+.error-message {
+  color: var(--danger);
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+/* ---------- Status banner ---------- */
+.status-banner {
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  background: #f7fafc;
+  color: var(--text-muted);
+}
+
+.status-ready {
+  border-color: var(--border);
+  background: #f7fafc;
+  color: var(--text-muted);
+}
+
+.status-saving {
+  border-color: var(--warning);
+  background: #fffaf0;
+  color: var(--warning);
+}
+
+.status-success {
+  border-color: var(--success);
+  background: #f0fff4;
+  color: var(--success);
+}
+
+.status-error {
+  border-color: var(--danger);
+  background: #fff5f5;
+  color: var(--danger);
+}
+
+/* ---------- Submit button ---------- */
+.submit-button {
+  align-self: flex-start;
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  transition: background-color 0.15s ease, transform 0.05s ease;
+}
+
+.submit-button:hover:not(:disabled) {
+  background: var(--primary-hover);
+}
+
+.submit-button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.submit-button:disabled {
+  background: #a0aec0;
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+/* ---------- People list ---------- */
+.people-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.people-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-row select {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.list-error {
+  background: #fff5f5;
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.people-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.people-table th,
+.people-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.people-table th {
+  background: #edf2f7;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.people-table tr:hover td {
+  background: #f7fafc;
+}
+
+.muted {
+  color: var(--text-muted);
+  font-style: italic;
+  text-align: center;
+}
+
+/* ---------- App chrome ---------- */
+.app-header {
+  margin-bottom: 24px;
+}
+
+.app-subtitle {
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.app-footer {
+  margin-top: 32px;
+  text-align: center;
+  color: var(--text-muted);
+}

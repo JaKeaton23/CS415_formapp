@@ -1,0 +1,57 @@
+/* Global styles for the SignUp Form app.
+   Keeps the app neutral and readable across light/dark system preferences. */
+:root {
+  --bg: #f5f7fa;
+  --surface: #ffffff;
+  --text: #1a202c;
+  --text-muted: #4a5568;
+  --border: #cbd5e0;
+  --primary: #3182ce;
+  --primary-hover: #2b6cb0;
+  --danger: #e53e3e;
+  --success: #38a169;
+  --warning: #dd6b20;
+
+  font-family: 'Segoe UI', Tahoma, system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+  color: var(--text);
+  background-color: var(--bg);
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+}
+
+#root {
+  width: 100%;
+  max-width: 1100px;
+  padding: 24px;
+}
+
+h1, h2, h3 {
+  margin-top: 0;
+  color: var(--text);
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
