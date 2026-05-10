@@ -31,7 +31,10 @@ async function request(path, options = {}) {
   }
 
   if (!response.ok) {
-    const message = (body && body.error) || `Request failed with status ${response.status}`;
+    const message = (body && body.error)
+      || (response.status >= 500
+        ? 'Unable to reach the signup service. Make sure the API is running.'
+        : `Request failed with status ${response.status}`);
     const err = new Error(message);
     err.status = response.status;
     err.body = body;

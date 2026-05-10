@@ -5,6 +5,19 @@
  * exercise our business logic without needing a running DynamoDB instance.
  */
 
+// Mock the AWS SDK module before signupService loads it. Jest's default
+// transform can't parse the ESM-only transitive deps the SDK pulls in, so we
+// short-circuit the require chain entirely.
+jest.mock('@aws-sdk/lib-dynamodb', () => ({
+  PutCommand: jest.fn().mockImplementation((input) => ({ __type: 'Put', input })),
+  ScanCommand: jest.fn().mockImplementation((input) => ({ __type: 'Scan', input })),
+  QueryCommand: jest.fn().mockImplementation((input) => ({ __type: 'Query', input })),
+  DynamoDBDocumentClient: { from: () => ({ send: jest.fn() }) },
+}));
+jest.mock('@aws-sdk/client-dynamodb', () => ({
+  DynamoDBClient: jest.fn().mockImplementation(() => ({ send: jest.fn() })),
+}));
+
 jest.mock('../dynamodb', () => {
   const mockSend = jest.fn();
   return {

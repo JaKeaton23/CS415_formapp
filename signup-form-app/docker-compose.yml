@@ -16,12 +16,6 @@ services:
     volumes:
       - dynamodb-data:/home/dynamodblocal/data
     working_dir: /home/dynamodblocal
-    user: "1000"
-    healthcheck:
-      test: ["CMD-SHELL", "curl -fs http://localhost:8000 || exit 1"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
 
   dynamodb-admin:
     image: aaronshaf/dynamodb-admin:latest
@@ -34,8 +28,7 @@ services:
     ports:
       - "8001:8001"
     depends_on:
-      dynamodb:
-        condition: service_started
+      - dynamodb
 
   api:
     build:
@@ -54,9 +47,9 @@ services:
     ports:
       - "3001:3001"
     depends_on:
-      dynamodb:
-        condition: service_started
-    command: ["sh", "-c", "node create-table.js && node server.js"]
+      - dynamodb
+    # Wait briefly for DynamoDB Local to bind, then create the table and start the API.
+    command: ["sh", "-c", "sleep 3 && node create-table.js && node server.js"]
 
   web:
     build:

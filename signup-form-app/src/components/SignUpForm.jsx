@@ -70,31 +70,7 @@ function SignUpForm() {
   const submitDisabled = !formIsValid || saveStatus === STATUS.SAVING;
 
   /**
-   * On mount, load the initial list of sign-ups.
-   * (We don't depend on filterCategory here — the dedicated effect below handles that.)
-   */
-  useEffect(() => {
-    let cancelled = false;
-    async function loadInitial() {
-      setListLoading(true);
-      setListError('');
-      try {
-        const result = await getSignups();
-        if (!cancelled) setPeople(Array.isArray(result) ? result : []);
-      } catch (err) {
-        if (!cancelled) setListError(err.message || 'Failed to load sign-ups.');
-      } finally {
-        if (!cancelled) setListLoading(false);
-      }
-    }
-    loadInitial();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  /**
-   * Reload the list whenever the filter changes (after the initial mount).
+   * Load the list on mount and reload it whenever the filter changes.
    */
   useEffect(() => {
     let cancelled = false;
@@ -112,13 +88,10 @@ function SignUpForm() {
         if (!cancelled) setListLoading(false);
       }
     }
-    // Skip the very first render — the mount effect above handles it.
-    if (filterCategory !== '' || people.length > 0) loadFiltered();
+    loadFiltered();
     return () => {
       cancelled = true;
     };
-    // We only want to react to filter changes here.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterCategory]);
 
   /**
@@ -187,8 +160,10 @@ function SignUpForm() {
         category: form.category,
       });
 
-      // Optimistically prepend to the visible list so users see their entry immediately.
-      setPeople((prev) => [created, ...prev]);
+      // Optimistically prepend only when the new entry belongs in the visible filter.
+      setPeople((prev) => (
+        !filterCategory || created.category === filterCategory ? [created, ...prev] : prev
+      ));
       setSaveStatus(STATUS.SUCCESS);
       setForm(EMPTY_FORM);
       setTouched({ name: false, email: false, phone: false, category: false });

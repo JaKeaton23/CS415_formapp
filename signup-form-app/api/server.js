@@ -56,7 +56,6 @@ app.post('/api/signups', async (req, res, next) => {
 });
 
 // Centralised error handler: maps service errors to JSON responses.
-// eslint-disable-next-line no-unused-vars
 app.use((err, _req, res, _next) => {
   const status = err.statusCode || 500;
   const payload = { error: err.message || 'Internal server error' };

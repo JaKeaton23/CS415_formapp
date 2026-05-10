@@ -7,7 +7,7 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 // Flat ESLint config for the React + Vite frontend.
 // Targets ES2022 modules and treats JSX files as React.
 export default [
-  { ignores: ['dist', 'node_modules'] },
+  { ignores: ['dist', 'node_modules', 'api/node_modules'] },
   {
     files: ['**/*.{js,jsx}'],
     languageOptions: {
@@ -35,6 +35,12 @@ export default [
       ],
       'react/prop-types': 'off',
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+    },
+  },
+  {
+    files: ['**/*.test.js'],
+    languageOptions: {
+      globals: globals.jest,
     },
   },
 ];
