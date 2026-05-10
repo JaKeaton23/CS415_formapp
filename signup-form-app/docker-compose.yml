@@ -10,11 +10,9 @@ services:
   dynamodb:
     image: amazon/dynamodb-local:2.5.2
     container_name: signup-dynamodb
-    command: -jar DynamoDBLocal.jar -sharedDb -dbPath /home/dynamodblocal/data
+    command: -jar DynamoDBLocal.jar -inMemory -sharedDb
     ports:
       - "8000:8000"
-    volumes:
-      - dynamodb-data:/home/dynamodblocal/data
     working_dir: /home/dynamodblocal
 
   dynamodb-admin:
@@ -62,6 +60,3 @@ services:
       - "5173:5173"
     depends_on:
       - api
-
-volumes:
-  dynamodb-data:
