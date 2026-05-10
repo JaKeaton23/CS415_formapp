@@ -6,7 +6,7 @@ import {
   validatePhone,
   validateCategory,
   validateAll,
-  isFormValid,
+  validate,
 } from '../utils/validation.js';
 import { getSignups, getSignupsByCategory, createSignup } from '../utils/api.js';
 import './SignUpForm.css';
@@ -48,10 +48,7 @@ function SignUpForm() {
   const [form, setForm] = useState(EMPTY_FORM);
 
   // Per-field error messages. Empty string means valid.
-  const [errors, setErrors] = useState({ name: '', email: '', phone: '', category: '' });
-
-  // Tracks which fields the user has interacted with so we can defer error display.
-  const [touched, setTouched] = useState({ name: false, email: false, phone: false, category: false });
+  const [fieldErrors, setFieldErrors] = useState({ name: '', email: '', phone: '', category: '' });
 
   // Submit lifecycle state machine.
   const [saveStatus, setSaveStatus] = useState(STATUS.READY);
@@ -64,7 +61,7 @@ function SignUpForm() {
   const [listError, setListError] = useState('');
 
   // Derived: valid when every field passes validation.
-  const formIsValid = useMemo(() => isFormValid(form), [form]);
+  const formIsValid = useMemo(() => validate(form), [form]);
 
   // Submit is disabled while saving OR while the form is invalid.
   const submitDisabled = !formIsValid || saveStatus === STATUS.SAVING;
@@ -120,21 +117,12 @@ function SignUpForm() {
   function handleChange(event) {
     const { name, value } = event.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev) => ({ ...prev, [name]: validateField(name, value) }));
+    setFieldErrors((prev) => ({ ...prev, [name]: validateField(name, value) }));
     // If the user starts editing again after a successful save, reset the banner.
     if (saveStatus === STATUS.SUCCESS || saveStatus === STATUS.ERROR) {
       setSaveStatus(STATUS.READY);
       setSubmitError('');
     }
-  }
-
-  /**
-   * Mark fields as touched on blur so the corresponding error message
-   * can be revealed without flashing while the user is still typing.
-   */
-  function handleBlur(event) {
-    const { name } = event.target;
-    setTouched((prev) => ({ ...prev, [name]: true }));
   }
 
   /**
@@ -146,9 +134,8 @@ function SignUpForm() {
   async function handleSubmit(event) {
     event.preventDefault();
     const allErrors = validateAll(form);
-    setErrors(allErrors);
-    setTouched({ name: true, email: true, phone: true, category: true });
-    if (!isFormValid(form)) return;
+    setFieldErrors(allErrors);
+    if (!validate(form)) return;
 
     setSaveStatus(STATUS.SAVING);
     setSubmitError('');
@@ -166,8 +153,7 @@ function SignUpForm() {
       ));
       setSaveStatus(STATUS.SUCCESS);
       setForm(EMPTY_FORM);
-      setTouched({ name: false, email: false, phone: false, category: false });
-      setErrors({ name: '', email: '', phone: '', category: '' });
+      setFieldErrors({ name: '', email: '', phone: '', category: '' });
 
       // Auto-revert the success banner after a short delay.
       window.setTimeout(() => {
@@ -184,8 +170,8 @@ function SignUpForm() {
    * or attempted to submit (which marks every field touched).
    */
   function renderError(field) {
-    if (!touched[field] || !errors[field]) return null;
-    return <span className="error-message" role="alert">{errors[field]}</span>;
+    if (!fieldErrors[field]) return null;
+    return <span className="error-message" role="alert">{fieldErrors[field]}</span>;
   }
 
   return (
@@ -200,9 +186,8 @@ function SignUpForm() {
             autoComplete="name"
             value={form.name}
             onChange={handleChange}
-            onBlur={handleBlur}
-            aria-invalid={Boolean(errors.name && touched.name)}
-            className={errors.name && touched.name ? 'invalid' : ''}
+            aria-invalid={Boolean(fieldErrors.name)}
+            className={fieldErrors.name ? 'invalid' : ''}
             placeholder="Jane Doe"
           />
           {renderError('name')}
@@ -217,9 +202,8 @@ function SignUpForm() {
             autoComplete="email"
             value={form.email}
             onChange={handleChange}
-            onBlur={handleBlur}
-            aria-invalid={Boolean(errors.email && touched.email)}
-            className={errors.email && touched.email ? 'invalid' : ''}
+            aria-invalid={Boolean(fieldErrors.email)}
+            className={fieldErrors.email ? 'invalid' : ''}
             placeholder="jane@example.com"
           />
           {renderError('email')}
@@ -234,9 +218,8 @@ function SignUpForm() {
             autoComplete="tel"
             value={form.phone}
             onChange={handleChange}
-            onBlur={handleBlur}
-            aria-invalid={Boolean(errors.phone && touched.phone)}
-            className={errors.phone && touched.phone ? 'invalid' : ''}
+            aria-invalid={Boolean(fieldErrors.phone)}
+            className={fieldErrors.phone ? 'invalid' : ''}
             placeholder="(555) 123-4567"
           />
           {renderError('phone')}
@@ -249,9 +232,8 @@ function SignUpForm() {
             name="category"
             value={form.category}
             onChange={handleChange}
-            onBlur={handleBlur}
-            aria-invalid={Boolean(errors.category && touched.category)}
-            className={errors.category && touched.category ? 'invalid' : ''}
+            aria-invalid={Boolean(fieldErrors.category)}
+            className={fieldErrors.category ? 'invalid' : ''}
           >
             <option value="">Select a category…</option>
             {CATEGORIES.map((cat) => (
@@ -276,19 +258,6 @@ function SignUpForm() {
       <section className="people-section" aria-label="Existing sign-ups">
         <header className="people-header">
           <h2>People</h2>
-          <div className="filter-row">
-            <label htmlFor="filterCategory">Filter by category:</label>
-            <select
-              id="filterCategory"
-              value={filterCategory}
-              onChange={(e) => setFilterCategory(e.target.value)}
-            >
-              <option value="">All categories</option>
-              {CATEGORIES.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
-          </div>
         </header>
 
         {listError && <div className="list-error" role="alert">{listError}</div>}
@@ -322,6 +291,20 @@ function SignUpForm() {
               ))}
             </tbody>
           </table>
+        </div>
+
+        <div className="filter-row filter-row-bottom">
+          <label htmlFor="filterCategory">Filter by category:</label>
+          <select
+            id="filterCategory"
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
+          >
+            <option value="">All categories</option>
+            {CATEGORIES.map((cat) => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
         </div>
       </section>
     </section>

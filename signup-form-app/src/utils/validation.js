@@ -84,6 +84,9 @@ export function isFormValid({ name, email, phone, category }) {
   );
 }
 
+// Named this way to match the assignment wording.
+export const validate = isFormValid;
+
 /**
  * Convenience helper: produce the full errors object in one pass.
  * Useful when re-validating on submit.

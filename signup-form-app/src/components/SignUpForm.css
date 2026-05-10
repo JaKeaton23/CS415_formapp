@@ -154,6 +154,12 @@
   gap: 8px;
 }
 
+.filter-row-bottom {
+  margin-top: 16px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
 .filter-row select {
   padding: 8px 10px;
   border: 1px solid var(--border);
